@@ -12,6 +12,7 @@ const newId = () => `a${Date.now()}_${_id++}`
 
 export default function App() {
   const [state, setState] = useState(() => decodeState())
+  const [editingId, setEditingId] = useState(null)
 
   // Keep the URL hash in sync so the link always reflects current data.
   useEffect(() => {
@@ -43,9 +44,20 @@ export default function App() {
     setState((s) => ({ ...s, activities: [...s.activities, { ...act, id: newId() }] }))
   }
 
+  const updateActivity = (id, act) => {
+    setState((s) => ({
+      ...s,
+      activities: s.activities.map((a) => (a.id === id ? { ...act, id } : a)),
+    }))
+    setEditingId(null)
+  }
+
   const removeActivity = (id) => {
+    if (editingId === id) setEditingId(null)
     setState((s) => ({ ...s, activities: s.activities.filter((a) => a.id !== id) }))
   }
+
+  const editing = state.activities.find((a) => a.id === editingId) || null
 
   const reset = () => {
     if (confirm('모든 데이터를 지울까요?')) setState({ people: [], activities: [] })
@@ -60,13 +72,37 @@ export default function App() {
 
       <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />
 
-      <ActivityForm people={state.people} onAdd={addActivity} />
+      <ActivityForm
+        people={state.people}
+        onAdd={addActivity}
+        editing={editing}
+        onUpdate={updateActivity}
+        onCancelEdit={() => setEditingId(null)}
+      />
 
-      <ActivityList activities={state.activities} onRemove={removeActivity} />
+      <ActivityList
+        activities={state.activities}
+        editingId={editingId}
+        onEdit={setEditingId}
+        onRemove={removeActivity}
+      />
 
-      <SettlementResult balances={balances} transfers={transfers} />
+      <SettlementResult
+        people={state.people}
+        activities={state.activities}
+        balances={balances}
+        transfers={transfers}
+      />
 
-      <ShareBar onReset={reset} />
+      <ShareBar
+        onReset={reset}
+        receiptData={{
+          people: state.people,
+          activities: state.activities,
+          balances,
+          transfers,
+        }}
+      />
 
       <footer>
         <span>데이터는 서버에 저장되지 않고 URL 링크에만 담깁니다.</span>

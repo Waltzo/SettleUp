@@ -2,10 +2,24 @@ import { useEffect, useState } from 'react'
 
 const emptyForm = { name: '', payer: '', amount: '' }
 
-export default function ActivityForm({ people, onAdd }) {
+export default function ActivityForm({ people, onAdd, editing, onUpdate, onCancelEdit }) {
   const [form, setForm] = useState(emptyForm)
   const [participants, setParticipants] = useState([])
   const [error, setError] = useState('')
+
+  const isEditing = !!editing
+
+  // Populate the form when an activity is selected for editing.
+  useEffect(() => {
+    if (editing) {
+      setForm({ name: editing.name, payer: editing.payer, amount: String(editing.amount) })
+      setParticipants(editing.participants)
+      setError('')
+    } else {
+      setForm(emptyForm)
+      setParticipants([])
+    }
+  }, [editing])
 
   // When everyone is removed, keep participant selection valid.
   useEffect(() => {
@@ -29,15 +43,20 @@ export default function ActivityForm({ people, onAdd }) {
     if (!(amount > 0)) return setError('금액은 0보다 커야 합니다.')
     if (participants.length === 0) return setError('참여자를 한 명 이상 선택하세요.')
 
-    onAdd({
-      name: form.name.trim(),
-      payer: form.payer,
-      amount,
-      participants,
-    })
+    const act = { name: form.name.trim(), payer: form.payer, amount, participants }
+    if (isEditing) onUpdate(editing.id, act)
+    else onAdd(act)
+
     setForm(emptyForm)
     setParticipants([])
     setError('')
+  }
+
+  const cancel = () => {
+    setForm(emptyForm)
+    setParticipants([])
+    setError('')
+    onCancelEdit()
   }
 
   if (people.length === 0) {
@@ -51,32 +70,34 @@ export default function ActivityForm({ people, onAdd }) {
 
   return (
     <section className="card">
-      <h2>2. 활동 추가</h2>
+      <h2>{isEditing ? '활동 수정' : '2. 활동 추가'}</h2>
       <form onSubmit={submit} className="form-grid">
-        <label>
-          활동 이름
-          <input
-            type="text"
-            placeholder="예: 저녁식사"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-        </label>
+        <div className="pair">
+          <label>
+            활동 이름
+            <input
+              type="text"
+              placeholder="예: 저녁식사"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+          </label>
 
-        <label>
-          결제자
-          <select
-            value={form.payer}
-            onChange={(e) => setForm({ ...form, payer: e.target.value })}
-          >
-            <option value="">선택</option>
-            {people.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </label>
+          <label>
+            결제자
+            <select
+              value={form.payer}
+              onChange={(e) => setForm({ ...form, payer: e.target.value })}
+            >
+              <option value="">선택</option>
+              {people.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
         <label>
           금액 (원)
@@ -112,7 +133,16 @@ export default function ActivityForm({ people, onAdd }) {
         </div>
 
         {error && <p className="error">{error}</p>}
-        <button type="submit" className="primary">활동 추가</button>
+        <div className="row">
+          <button type="submit" className="primary">
+            {isEditing ? '수정 완료' : '활동 추가'}
+          </button>
+          {isEditing && (
+            <button type="button" className="ghost" onClick={cancel}>
+              취소
+            </button>
+          )}
+        </div>
       </form>
     </section>
   )

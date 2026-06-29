@@ -1,6 +1,6 @@
 const won = (n) => `${Number(n).toLocaleString('ko-KR')}원`
 
-export default function ActivityList({ activities, onRemove }) {
+export default function ActivityList({ activities, editingId, onEdit, onRemove }) {
   if (activities.length === 0) {
     return (
       <section className="card">
@@ -17,19 +17,27 @@ export default function ActivityList({ activities, onRemove }) {
         {activities.map((a) => {
           const per = Math.round(Number(a.amount) / a.participants.length)
           return (
-            <li key={a.id} className="activity">
-              <div className="activity-main">
-                <strong>{a.name}</strong>
-                <span className="amount">{won(a.amount)}</span>
+            <li
+              key={a.id}
+              className={`activity${editingId === a.id ? ' editing' : ''}`}
+            >
+              <div className="activity-body">
+                <div className="activity-main">
+                  <strong>{a.name}</strong>
+                  <span className="amount">{won(a.amount)}</span>
+                </div>
+                <div className="activity-meta">
+                  <span><b>{a.payer}</b> 결제</span>
+                  <span>·</span>
+                  <span>{a.participants.join(', ')} ({a.participants.length}명)</span>
+                  <span>·</span>
+                  <span>1인 {won(per)}</span>
+                </div>
               </div>
-              <div className="activity-meta">
-                <span><b>{a.payer}</b> 결제</span>
-                <span>·</span>
-                <span>{a.participants.join(', ')} ({a.participants.length}명)</span>
-                <span>·</span>
-                <span>1인 {won(per)}</span>
+              <div className="activity-actions">
+                <button className="edit" onClick={() => onEdit(a.id)}>수정</button>
+                <button className="del" onClick={() => onRemove(a.id)}>삭제</button>
               </div>
-              <button className="del" onClick={() => onRemove(a.id)}>삭제</button>
             </li>
           )
         })}
