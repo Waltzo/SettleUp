@@ -3,7 +3,7 @@ import PeoplePanel from './components/PeoplePanel.jsx'
 import ActivityForm from './components/ActivityForm.jsx'
 import ActivityList from './components/ActivityList.jsx'
 import SettlementResult from './components/SettlementResult.jsx'
-import ShareBar from './components/ShareBar.jsx'
+import ShareActions from './components/ShareActions.jsx'
 import AddToActivitiesModal from './components/AddToActivitiesModal.jsx'
 import { computeBalances, minimizeTransfers } from './lib/settle.js'
 import { decodeState, writeHash } from './lib/urlState.js'
@@ -121,15 +121,28 @@ export default function App() {
         </div>
       </header>
 
-      <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />
+      <div className="columns">
+        <div className="col">
+          <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />
 
-      <ActivityList
-        activities={state.activities}
-        hasPeople={state.people.length > 0}
-        onAdd={openAdd}
-        onEdit={openEdit}
-        onRemove={removeActivity}
-      />
+          <ActivityList
+            activities={state.activities}
+            hasPeople={state.people.length > 0}
+            onAdd={openAdd}
+            onEdit={openEdit}
+            onRemove={removeActivity}
+          />
+        </div>
+
+        <div className="col">
+          <SettlementResult
+            people={state.people}
+            activities={state.activities}
+            balances={balances}
+            transfers={transfers}
+          />
+        </div>
+      </div>
 
       {formOpen && (
         <ActivityForm
@@ -150,14 +163,7 @@ export default function App() {
         />
       )}
 
-      <SettlementResult
-        people={state.people}
-        activities={state.activities}
-        balances={balances}
-        transfers={transfers}
-      />
-
-      <ShareBar
+      <ShareActions
         onReset={reset}
         receiptData={{
           groupName: state.groupName,
