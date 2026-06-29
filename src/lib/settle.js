@@ -16,15 +16,24 @@ export function computeBalances(state) {
   for (const name of state.people) balances[name] = 0
 
   for (const act of state.activities) {
-    const participants = act.participants.filter((p) => state.people.includes(p))
     const amount = Number(act.amount)
-    if (!participants.length || !amount || !state.people.includes(act.payer)) continue
+    if (!amount || !state.people.includes(act.payer)) continue
 
-    const share = amount / participants.length
     // Payer fronted the full amount.
     balances[act.payer] += amount
-    // Each participant owes their share.
-    for (const p of participants) balances[p] -= share
+
+    if (act.splitMode === 'custom' && act.shares) {
+      // 쓴만큼: each person owes exactly what they used.
+      for (const [name, used] of Object.entries(act.shares)) {
+        if (state.people.includes(name)) balances[name] -= Number(used) || 0
+      }
+    } else {
+      // N빵: split equally among participants.
+      const participants = act.participants.filter((p) => state.people.includes(p))
+      if (!participants.length) continue
+      const share = amount / participants.length
+      for (const p of participants) balances[p] -= share
+    }
   }
 
   for (const name of Object.keys(balances)) balances[name] = round(balances[name])

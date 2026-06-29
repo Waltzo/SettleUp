@@ -33,6 +33,12 @@ header h1 {
   font-size: 1.6rem;
 }
 header .sub { margin: 0 0 8px; color: var(--muted); }
+.group-name {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+}
 
 .card {
   background: var(--card);
@@ -102,9 +108,30 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   gap: 4px;
   font-size: 0.9rem;
 }
-/* name + payer on one row */
+/* two fields on one row */
 .pair { display: flex; gap: 10px; }
 .pair > label { flex: 1; min-width: 0; }
+.pair > label.grow { flex: 2; }
+.pair > label.split-select { flex: 1; }
+
+/* custom (쓴만큼) per-participant amounts */
+.custom-list { display: flex; flex-direction: column; gap: 8px; }
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.55;
+}
+.custom-row.on { opacity: 1; }
+.custom-row .chk { flex: 1; border: none; padding: 0; }
+.custom-row input[type='number'] { flex: 1; }
+.sum-hint {
+  font-size: 0.85rem;
+  color: var(--minus);
+  text-align: right;
+  margin-top: 2px;
+}
+.sum-hint.ok { color: var(--plus); }
 
 /* chips (people) */
 .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 12px 0 0; }
@@ -217,3 +244,70 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .transfer .t-amount { font-weight: 700; white-space: nowrap; }
 
 footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 0.8rem; }
+
+/* split-mode badge in activity list */
+.badge {
+  display: inline-block;
+  background: #eef1fb;
+  color: var(--brand);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* receipt modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 33, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+.modal {
+  background: #fff;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-x {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0 4px;
+  color: var(--muted);
+}
+.modal-body {
+  padding: 16px;
+  overflow: auto;
+  background: #f4f5f7;
+  text-align: center;
+}
+.receipt-img {
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+}
+.modal-actions button { flex: 1; }

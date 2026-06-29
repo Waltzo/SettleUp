@@ -1,7 +1,7 @@
 // Encode/decode app state into the URL hash so a single link carries
 // the full settlement — no backend needed.
 
-const EMPTY = { people: [], activities: [] }
+const EMPTY = { groupName: '', people: [], activities: [] }
 
 // Unicode-safe base64 (btoa only handles Latin1).
 function toBase64(str) {
@@ -33,7 +33,7 @@ export function decodeState() {
     if (!obj || !Array.isArray(obj.people) || !Array.isArray(obj.activities)) {
       return structuredClone(EMPTY)
     }
-    return obj
+    return { groupName: '', ...obj }
   } catch {
     return structuredClone(EMPTY)
   }

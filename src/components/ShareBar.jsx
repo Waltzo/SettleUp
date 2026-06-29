@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { shareReceipt } from '../lib/receipt.js'
+import { renderReceipt } from '../lib/receipt.js'
+import ReceiptModal from './ReceiptModal.jsx'
 
 export default function ShareBar({ onReset, receiptData }) {
   const [copied, setCopied] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [blob, setBlob] = useState(null)
 
   const copy = async () => {
     try {
@@ -22,10 +24,11 @@ export default function ShareBar({ onReset, receiptData }) {
   }
 
   const hasResult = receiptData.transfers.length > 0
-  const shareImage = async () => {
+  const openReceipt = async () => {
     setBusy(true)
     try {
-      await shareReceipt(receiptData)
+      const b = await renderReceipt(receiptData)
+      setBlob(b)
     } finally {
       setBusy(false)
     }
@@ -41,8 +44,8 @@ export default function ShareBar({ onReset, receiptData }) {
         <button className="primary" onClick={copy}>
           {copied ? '복사됨 ✓' : '공유 링크 복사'}
         </button>
-        <button className="brand-outline" onClick={shareImage} disabled={!hasResult || busy}>
-          {busy ? '생성 중…' : '🧾 영수증 이미지 공유'}
+        <button className="brand-outline" onClick={openReceipt} disabled={!hasResult || busy}>
+          {busy ? '생성 중…' : '🧾 영수증 미리보기'}
         </button>
         <button className="ghost" onClick={onReset}>
           전체 초기화
@@ -51,6 +54,8 @@ export default function ShareBar({ onReset, receiptData }) {
       {!hasResult && (
         <p className="muted small">활동을 추가하면 영수증을 만들 수 있어요.</p>
       )}
+
+      {blob && <ReceiptModal blob={blob} onClose={() => setBlob(null)} />}
     </section>
   )
 }

@@ -15,6 +15,7 @@ export default function ActivityList({ activities, editingId, onEdit, onRemove }
       <h2>3. 활동 목록</h2>
       <ul className="activity-list">
         {activities.map((a) => {
+          const isCustom = a.splitMode === 'custom' && a.shares
           const per = Math.round(Number(a.amount) / a.participants.length)
           return (
             <li
@@ -29,9 +30,17 @@ export default function ActivityList({ activities, editingId, onEdit, onRemove }
                 <div className="activity-meta">
                   <span><b>{a.payer}</b> 결제</span>
                   <span>·</span>
-                  <span>{a.participants.join(', ')} ({a.participants.length}명)</span>
+                  <span className="badge">{isCustom ? '쓴만큼' : 'N빵'}</span>
                   <span>·</span>
-                  <span>1인 {won(per)}</span>
+                  {isCustom ? (
+                    <span>
+                      {Object.entries(a.shares)
+                        .map(([n, v]) => `${n} ${won(v)}`)
+                        .join(', ')}
+                    </span>
+                  ) : (
+                    <span>{a.participants.join(', ')} ({a.participants.length}명) · 1인 {won(per)}</span>
+                  )}
                 </div>
               </div>
               <div className="activity-actions">

@@ -59,8 +59,11 @@ export default function App() {
 
   const editing = state.activities.find((a) => a.id === editingId) || null
 
+  const setGroupName = (name) => setState((s) => ({ ...s, groupName: name }))
+
   const reset = () => {
-    if (confirm('모든 데이터를 지울까요?')) setState({ people: [], activities: [] })
+    if (confirm('모든 데이터를 지울까요?'))
+      setState({ groupName: '', people: [], activities: [] })
   }
 
   return (
@@ -68,6 +71,13 @@ export default function App() {
       <header>
         <h1>💸 더치페이 정산</h1>
         <p className="sub">누가 누구에게 얼마를 보내면 되는지 계산해드려요.</p>
+        <input
+          className="group-name"
+          type="text"
+          placeholder="모임 이름 (예: 제주도 여행)"
+          value={state.groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+        />
       </header>
 
       <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />
@@ -97,6 +107,7 @@ export default function App() {
       <ShareBar
         onReset={reset}
         receiptData={{
+          groupName: state.groupName,
           people: state.people,
           activities: state.activities,
           balances,
