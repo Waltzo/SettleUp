@@ -336,6 +336,20 @@ footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 0
 .modal-actions button { flex: 1; }
 .share-hint { padding: 0 16px 14px; text-align: center; }
 
+/* add-to-activities picker */
+.pick-list { list-style: none; padding: 0; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.pick-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pick-amount { font-weight: 700; white-space: nowrap; }
+
 /* activity add button under the list */
 .add-activity { width: 100%; margin-top: 14px; padding: 12px; font-weight: 600; }
 

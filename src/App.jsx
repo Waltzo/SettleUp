@@ -4,6 +4,7 @@ import ActivityForm from './components/ActivityForm.jsx'
 import ActivityList from './components/ActivityList.jsx'
 import SettlementResult from './components/SettlementResult.jsx'
 import ShareBar from './components/ShareBar.jsx'
+import AddToActivitiesModal from './components/AddToActivitiesModal.jsx'
 import { computeBalances, minimizeTransfers } from './lib/settle.js'
 import { decodeState, writeHash } from './lib/urlState.js'
 
@@ -14,6 +15,7 @@ export default function App() {
   const [state, setState] = useState(() => decodeState())
   const [editingId, setEditingId] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
+  const [pendingPerson, setPendingPerson] = useState(null)
 
   // Keep the URL hash in sync so the link always reflects current data.
   useEffect(() => {
@@ -27,6 +29,27 @@ export default function App() {
     const n = name.trim()
     if (!n || state.people.includes(n)) return
     setState((s) => ({ ...s, people: [...s.people, n] }))
+    // If activities already exist, ask which ones this person joined.
+    if (state.activities.length > 0) setPendingPerson(n)
+  }
+
+  // Add a (new) person to the selected existing activities as a participant.
+  const addPersonToActivities = (name, ids) => {
+    if (ids.length > 0) {
+      setState((s) => ({
+        ...s,
+        activities: s.activities.map((a) => {
+          if (!ids.includes(a.id) || a.participants.includes(name)) return a
+          const next = { ...a, participants: [...a.participants, name] }
+          // 각자(custom): seed used amount as 0 — user edits later.
+          if (a.splitMode === 'custom' && a.shares) {
+            next.shares = { ...a.shares, [name]: 0 }
+          }
+          return next
+        }),
+      }))
+    }
+    setPendingPerson(null)
   }
 
   const removePerson = (name) => {
@@ -115,6 +138,15 @@ export default function App() {
           editing={editing}
           onUpdate={updateActivity}
           onClose={closeForm}
+        />
+      )}
+
+      {pendingPerson && (
+        <AddToActivitiesModal
+          personName={pendingPerson}
+          activities={state.activities}
+          onConfirm={(ids) => addPersonToActivities(pendingPerson, ids)}
+          onClose={() => setPendingPerson(null)}
         />
       )}
 
