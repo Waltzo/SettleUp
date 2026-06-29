@@ -6,20 +6,20 @@ import SettlementResult from './components/SettlementResult.jsx'
 import ShareActions from './components/ShareActions.jsx'
 import AddToActivitiesModal from './components/AddToActivitiesModal.jsx'
 import { computeBalances, minimizeTransfers } from './lib/settle.js'
-import { decodeState, writeHash } from './lib/urlState.js'
+import { loadState, saveState } from './lib/storage.js'
 
 let _id = 0
 const newId = () => `a${Date.now()}_${_id++}`
 
 export default function App() {
-  const [state, setState] = useState(() => decodeState())
+  const [state, setState] = useState(() => loadState())
   const [editingId, setEditingId] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
   const [pendingPerson, setPendingPerson] = useState(null)
 
-  // Keep the URL hash in sync so the link always reflects current data.
+  // Persist to localStorage so a reload restores the draft.
   useEffect(() => {
-    writeHash(state)
+    saveState(state)
   }, [state])
 
   const balances = useMemo(() => computeBalances(state), [state])
@@ -199,7 +199,7 @@ export default function App() {
       />
 
       <footer>
-        <div>데이터는 서버에 저장되지 않고 URL 링크에만 담깁니다.</div>
+        <div>데이터는 서버에 저장되지 않고 이 브라우저에만 보관됩니다.</div>
         <div>오류 및 건의사항 @waltz_owo</div>
       </footer>
     </div>
