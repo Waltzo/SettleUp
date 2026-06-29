@@ -124,7 +124,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 .custom-row.on { opacity: 1; }
 .custom-row .chk { flex: 1; border: none; padding: 0; }
-.custom-row input[type='number'] { flex: 1; }
+.custom-row input[type='number'] { flex: 5; }
 .sum-hint {
   font-size: 0.85rem;
   color: var(--minus);
@@ -192,9 +192,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 .activity.editing { border-color: var(--brand); box-shadow: 0 0 0 2px #eef1fb; }
 .activity-body { flex: 1; min-width: 0; }
-.activity-main { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.activity-main { display: flex; align-items: baseline; gap: 8px; }
 .activity-main strong { word-break: break-all; }
-.activity-main .amount { font-weight: 700; white-space: nowrap; }
+.activity-main .amount { font-weight: 700; white-space: nowrap; margin-left: auto;}
 .activity-meta {
   display: flex;
   flex-wrap: wrap;
@@ -254,6 +254,10 @@ footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 0
   padding: 1px 6px;
   font-size: 0.75rem;
   font-weight: 600;
+}
+.badge.custom {
+  background: #fff1e0;
+  color: #d98324;
 }
 
 /* receipt modal */

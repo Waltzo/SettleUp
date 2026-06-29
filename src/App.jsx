@@ -83,12 +83,12 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <h1>💸 더치페이 정산</h1>
+        <h1>💸정산 영수증</h1>
         <p className="sub">누가 누구에게 얼마를 보내면 되는지 계산해드려요.</p>
         <input
           className="group-name"
           type="text"
-          placeholder="모임 이름 (예: 제주도 여행)"
+          placeholder="모임 이름"
           value={state.groupName}
           onChange={(e) => setGroupName(e.target.value)}
         />
@@ -133,7 +133,8 @@ export default function App() {
       />
 
       <footer>
-        <span>데이터는 서버에 저장되지 않고 URL 링크에만 담깁니다.</span>
+        <div>데이터는 서버에 저장되지 않고 URL 링크에만 담깁니다.</div>
+        <div>오류 및 건의사항 @waltz_owo</div>
       </footer>
     </div>
   )

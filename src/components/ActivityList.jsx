@@ -18,11 +18,11 @@ export default function ActivityList({ activities, hasPeople, onAdd, onEdit, onR
                   <div className="activity-main">
                     <strong>{a.name}</strong>
                     <span className="amount">{won(a.amount)}</span>
+                    <span className={`badge${isCustom ? ' custom' : ''}`}>{isCustom ? '각자' : 'N빵'}</span>
                   </div>
                   <div className="activity-meta">
                     <span><b>{a.payer}</b> 결제</span>
                     <span>·</span>
-                    <span className="badge">{isCustom ? '쓴만큼' : 'N빵'}</span>
                     <span>·</span>
                     {isCustom ? (
                       <span>

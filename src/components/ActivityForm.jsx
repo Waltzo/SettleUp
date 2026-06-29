@@ -122,8 +122,8 @@ export default function ActivityForm({ people, onAdd, editing, onUpdate, onClose
         </div>
         <form onSubmit={submit} className="modal-form-el">
           <div className="form-grid modal-body">
-        <div className="pair">
-          <label>
+            <div className="pair">
+              <label className="grow">
             활동 이름
             <input
               type="text"
@@ -167,7 +167,7 @@ export default function ActivityForm({ people, onAdd, editing, onUpdate, onClose
               onChange={(e) => setForm({ ...form, splitMode: e.target.value })}
             >
               <option value="equal">N빵</option>
-              <option value="custom">쓴만큼</option>
+              <option value="custom">각자</option>
             </select>
           </label>
         </div>
