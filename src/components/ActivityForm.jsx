@@ -3,13 +3,20 @@ import { useEffect, useState } from 'react'
 const emptyForm = { name: '', payer: '', amount: '', splitMode: 'equal' }
 const won = (n) => `${Number(n).toLocaleString('ko-KR')}원`
 
-export default function ActivityForm({ people, onAdd, editing, onUpdate, onCancelEdit }) {
+export default function ActivityForm({ people, onAdd, editing, onUpdate, onClose }) {
   const [form, setForm] = useState(emptyForm)
   const [participants, setParticipants] = useState([])
   const [shares, setShares] = useState({}) // name -> string amount (custom mode)
   const [error, setError] = useState('')
 
   const isEditing = !!editing
+
+  // Close on Escape.
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   // Populate the form when an activity is selected for editing.
   useEffect(() => {
@@ -106,27 +113,15 @@ export default function ActivityForm({ people, onAdd, editing, onUpdate, onCance
     setError('')
   }
 
-  const cancel = () => {
-    setForm(emptyForm)
-    setParticipants([])
-    setShares({})
-    setError('')
-    onCancelEdit()
-  }
-
-  if (people.length === 0) {
-    return (
-      <section className="card">
-        <h2>2. 활동 추가</h2>
-        <p className="muted">먼저 참여 인원을 추가하세요.</p>
-      </section>
-    )
-  }
-
   return (
-    <section className="card">
-      <h2>{isEditing ? '활동 수정' : '2. 활동 추가'}</h2>
-      <form onSubmit={submit} className="form-grid">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal modal-form" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <strong>{isEditing ? '활동 수정' : '활동 추가'}</strong>
+          <button className="modal-x" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={submit} className="modal-form-el">
+          <div className="form-grid modal-body">
         <div className="pair">
           <label>
             활동 이름
@@ -229,18 +224,19 @@ export default function ActivityForm({ people, onAdd, editing, onUpdate, onCance
           )}
         </div>
 
-        {error && <p className="error">{error}</p>}
-        <div className="row">
-          <button type="submit" className="primary">
-            {isEditing ? '수정 완료' : '활동 추가'}
-          </button>
-          {isEditing && (
-            <button type="button" className="ghost" onClick={cancel}>
+            {error && <p className="error">{error}</p>}
+          </div>
+
+          <div className="modal-actions">
+            <button type="button" className="ghost" onClick={onClose}>
               취소
             </button>
-          )}
-        </div>
-      </form>
-    </section>
+            <button type="submit" className="primary">
+              {isEditing ? '수정 완료' : '추가'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }

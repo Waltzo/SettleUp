@@ -13,6 +13,7 @@ const newId = () => `a${Date.now()}_${_id++}`
 export default function App() {
   const [state, setState] = useState(() => decodeState())
   const [editingId, setEditingId] = useState(null)
+  const [formOpen, setFormOpen] = useState(false)
 
   // Keep the URL hash in sync so the link always reflects current data.
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function App() {
 
   const addActivity = (act) => {
     setState((s) => ({ ...s, activities: [...s.activities, { ...act, id: newId() }] }))
+    closeForm()
   }
 
   const updateActivity = (id, act) => {
@@ -49,12 +51,24 @@ export default function App() {
       ...s,
       activities: s.activities.map((a) => (a.id === id ? { ...act, id } : a)),
     }))
-    setEditingId(null)
+    closeForm()
   }
 
   const removeActivity = (id) => {
-    if (editingId === id) setEditingId(null)
     setState((s) => ({ ...s, activities: s.activities.filter((a) => a.id !== id) }))
+  }
+
+  const openAdd = () => {
+    setEditingId(null)
+    setFormOpen(true)
+  }
+  const openEdit = (id) => {
+    setEditingId(id)
+    setFormOpen(true)
+  }
+  const closeForm = () => {
+    setFormOpen(false)
+    setEditingId(null)
   }
 
   const editing = state.activities.find((a) => a.id === editingId) || null
@@ -82,20 +96,23 @@ export default function App() {
 
       <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />
 
-      <ActivityForm
-        people={state.people}
-        onAdd={addActivity}
-        editing={editing}
-        onUpdate={updateActivity}
-        onCancelEdit={() => setEditingId(null)}
-      />
-
       <ActivityList
         activities={state.activities}
-        editingId={editingId}
-        onEdit={setEditingId}
+        hasPeople={state.people.length > 0}
+        onAdd={openAdd}
+        onEdit={openEdit}
         onRemove={removeActivity}
       />
+
+      {formOpen && (
+        <ActivityForm
+          people={state.people}
+          onAdd={addActivity}
+          editing={editing}
+          onUpdate={updateActivity}
+          onClose={closeForm}
+        />
+      )}
 
       <SettlementResult
         people={state.people}
