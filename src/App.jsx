@@ -85,13 +85,17 @@ export default function App() {
       <header>
         <h1>💸정산 영수증</h1>
         <p className="sub">누가 누구에게 얼마를 보내면 되는지 계산해드려요.</p>
-        <input
-          className="group-name"
-          type="text"
-          placeholder="모임 이름"
-          value={state.groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-        />
+        <div className="group-name-wrap">
+          <input
+            className="group-name"
+            type="text"
+            placeholder="모임 이름"
+            maxLength={20}
+            value={state.groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+          />
+          <span className="char-count">{state.groupName.length}/20</span>
+        </div>
       </header>
 
       <PeoplePanel people={state.people} onAdd={addPerson} onRemove={removePerson} />

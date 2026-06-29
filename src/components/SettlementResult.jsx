@@ -6,13 +6,13 @@ export default function SettlementResult({ balances, transfers }) {
 
   return (
     <section className="card result">
-      <h2>4. 정산 결과</h2>
+      <h2>정산 결과</h2>
 
       {!hasData ? (
         <p className="muted">활동을 추가하면 정산 결과가 나타납니다.</p>
       ) : (
         <>
-          <h3>개인별 잔액</h3>
+          <h3>개인별 정산 금액</h3>
           <ul className="balance-list">
             {names.map((n) => {
               const b = balances[n]

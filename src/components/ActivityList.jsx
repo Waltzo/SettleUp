@@ -3,7 +3,7 @@ const won = (n) => `${Number(n).toLocaleString('ko-KR')}원`
 export default function ActivityList({ activities, hasPeople, onAdd, onEdit, onRemove }) {
   return (
     <section className="card">
-      <h2>3. 활동 목록</h2>
+      <h2>결제 목록</h2>
 
       {activities.length === 0 ? (
         <p className="muted">아직 등록된 활동이 없어요.</p>
@@ -21,9 +21,7 @@ export default function ActivityList({ activities, hasPeople, onAdd, onEdit, onR
                     <span className={`badge${isCustom ? ' custom' : ''}`}>{isCustom ? '각자' : 'N빵'}</span>
                   </div>
                   <div className="activity-meta">
-                    <span><b>{a.payer}</b> 결제</span>
-                    <span>·</span>
-                    <span>·</span>
+                    <div><b>{a.payer}</b> 결제</div>
                     {isCustom ? (
                       <span>
                         {Object.entries(a.shares)

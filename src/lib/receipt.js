@@ -1,6 +1,29 @@
-// Render the settlement as a receipt-style PNG using a canvas — no deps.
+// Render the settlement as a receipt-style PNG using a canvas.
+import QRCode from 'qrcode'
 
 const won = (n) => `${Number(n).toLocaleString('ko-KR')}원`
+
+// QR size (px) drawn at the bottom of the receipt.
+const QR = 132
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = src
+  })
+}
+
+// Build a QR data-URL for the app's home page (no state hash → shortest QR).
+async function makeQR() {
+  try {
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}`
+    return await QRCode.toDataURL(url, { margin: 1, width: QR * 2, errorCorrectionLevel: 'L' })
+  } catch {
+    return null
+  }
+}
 
 const COL = {
   paper: '#ffffff',
@@ -33,6 +56,14 @@ function wrapText(ctx, text, maxWidth) {
   return lines.length ? lines : ['']
 }
 
+// Truncate to a max pixel width, appending '…' if cut.
+function truncate(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text
+  let t = text
+  while (t.length && ctx.measureText(t + '…').width > maxWidth) t = t.slice(0, -1)
+  return t + '…'
+}
+
 function activityMeta(a) {
   if (a.splitMode === 'custom' && a.shares) {
     const list = Object.entries(a.shares).map(([n, v]) => `${n} ${won(v)}`).join(', ')
@@ -45,7 +76,7 @@ function activityMeta(a) {
  * Draw a receipt and return a Promise<Blob> (PNG).
  * @param {{groupName?:string, people:string[], activities:any[], balances:Record<string,number>, transfers:any[]}} data
  */
-export function renderReceipt({ groupName, people = [], activities = [], balances = {}, transfers = [] }) {
+export async function renderReceipt({ groupName, people = [], activities = [], balances = {}, transfers = [] }) {
   const scale = 2
   const W = 380
   const pad = 24
@@ -53,6 +84,10 @@ export function renderReceipt({ groupName, people = [], activities = [], balance
   const contentW = W - pad * 2
 
   const names = Object.keys(balances).filter((n) => balances[n] !== 0)
+
+  // QR for the share link (drawn at the very bottom).
+  const qrUrl = await makeQR()
+  const qrImg = qrUrl ? await loadImage(qrUrl) : null
 
   // Measuring context to pre-compute wrapped line counts.
   const meas = document.createElement('canvas').getContext('2d')
@@ -78,6 +113,11 @@ export function renderReceipt({ groupName, people = [], activities = [], balance
   h += 16
   h += 24 // 송금 title
   h += (transfers.length || 1) * lh
+  if (qrImg) {
+    h += 16 // divider gap
+    h += QR // qr image
+    h += 18 // caption
+  }
   h += pad + 8
 
   const canvas = document.createElement('canvas')
@@ -94,13 +134,16 @@ export function renderReceipt({ groupName, people = [], activities = [], balance
 
   // Title = group name (fallback to default).
   ctx.fillStyle = COL.ink
+  ctx.textAlign = 'center'
+  ctx.fillStyle = COL.ink
   ctx.font = FONT(20, 700)
-  ctx.fillText(groupName?.trim() || '💸 더치페이 정산', pad, y)
+  ctx.fillText('SettleUp 정산 영수증', W / 2, y)
   y += 30
 
   ctx.fillStyle = COL.muted
   ctx.font = FONT(12)
-  ctx.fillText('SettleUp 정산 영수증', pad, y)
+  ctx.fillText(groupName?.trim() || '💸 더치페이 정산', W / 2, y)
+  ctx.textAlign = 'left'
   y += 18 + 16
 
   const dashed = (yy) => {
@@ -149,7 +192,10 @@ export function renderReceipt({ groupName, people = [], activities = [], balance
     activities.forEach((a, i) => {
       ctx.fillStyle = COL.ink
       ctx.font = FONT(14, 600)
-      ctx.fillText(a.name, pad, y)
+      // Reserve room for the right-aligned amount, ellipsize the name.
+      const amtW = ctx.measureText(won(a.amount)).width
+      const nameW = contentW - amtW - 12
+      ctx.fillText(truncate(ctx, a.name, nameW), pad, y)
       rightText(won(a.amount), COL.ink)
       y += lh
       ctx.fillStyle = COL.muted
@@ -199,6 +245,20 @@ export function renderReceipt({ groupName, people = [], activities = [], balance
       rightText(won(t.amount), COL.brand)
       y += lh
     }
+  }
+
+  // QR code linking to the share URL.
+  if (qrImg) {
+    y += 16
+    dashed(y - 8)
+    const qx = (W - QR) / 2
+    ctx.drawImage(qrImg, qx, y, QR, QR)
+    y += QR + 2
+    ctx.fillStyle = COL.muted
+    ctx.font = FONT(11)
+    ctx.textAlign = 'center'
+    ctx.fillText('스캔하면 SettleUp으로 이동합니다', W / 2, y)
+    ctx.textAlign = 'left'
   }
 
   return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/png'))

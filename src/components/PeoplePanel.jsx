@@ -11,7 +11,7 @@ export default function PeoplePanel({ people, onAdd, onRemove }) {
 
   return (
     <section className="card">
-      <h2>1. 참여 인원</h2>
+      <h2>참여 인원</h2>
       <form className="row" onSubmit={submit}>
         <input
           type="text"

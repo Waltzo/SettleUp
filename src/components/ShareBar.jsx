@@ -36,14 +36,14 @@ export default function ShareBar({ onReset, receiptData }) {
 
   return (
     <section className="card share">
-      <h2>5. 공유</h2>
+      <h2>공유하기</h2>
       <p className="muted">
-        링크를 복사해 보내거나, 영수증 이미지로 정산 결과를 공유하세요.
+        영수증 이미지로 정산 결과를 공유하세요.
       </p>
       <div className="row wrap">
-        <button className="primary" onClick={copy}>
+        {/* <button className="primary" onClick={copy}>
           {copied ? '복사됨 ✓' : '공유 링크 복사'}
-        </button>
+        </button> */}
         <button className="brand-outline" onClick={openReceipt} disabled={!hasResult || busy}>
           {busy ? '생성 중…' : '🧾 영수증 미리보기'}
         </button>
