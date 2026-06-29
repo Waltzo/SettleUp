@@ -29,9 +29,9 @@ export default function SettlementResult({ balances, transfers }) {
             })}
           </ul>
 
-          <h3>송금 내역 (최소 횟수)</h3>
+          <h3>정산 방법</h3>
           {transfers.length === 0 ? (
-            <p className="muted">송금할 내역이 없습니다.</p>
+            <p className="muted">정산할 내역이 없습니다.</p>
           ) : (
             <ul className="transfer-list">
               {transfers.map((t, i) => (

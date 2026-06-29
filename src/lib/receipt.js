@@ -67,7 +67,7 @@ function truncate(ctx, text, maxWidth) {
 function activityMeta(a) {
   if (a.splitMode === 'custom' && a.shares) {
     const list = Object.entries(a.shares).map(([n, v]) => `${n} ${won(v)}`).join(', ')
-    return `${a.payer} 결제 · 쓴만큼 · ${list}`
+    return `${a.payer} 결제 · 각자 · ${list}`
   }
   return `${a.payer} 결제 · N빵 · ${a.participants.join(', ')} (${a.participants.length}명)`
 }
@@ -211,7 +211,7 @@ export async function renderReceipt({ groupName, people = [], activities = [], b
   dashed(y - 8)
 
   // Balances
-  sectionTitle('개인별 잔액')
+  sectionTitle('개인별 정산 금액')
   ctx.font = FONT(13)
   if (names.length === 0) {
     ctx.fillStyle = COL.muted
@@ -231,12 +231,12 @@ export async function renderReceipt({ groupName, people = [], activities = [], b
   dashed(y - 8)
 
   // Transfers
-  sectionTitle('송금 내역 (최소 횟수)')
+  sectionTitle('정산 방법')
   ctx.font = FONT(14, 600)
   if (transfers.length === 0) {
     ctx.fillStyle = COL.muted
     ctx.font = FONT(13)
-    ctx.fillText('송금할 내역 없음', pad, y)
+    ctx.fillText('정산할 내역 없음', pad, y)
     y += lh
   } else {
     for (const t of transfers) {
