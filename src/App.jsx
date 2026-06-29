@@ -83,7 +83,7 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <h1>💸정산 영수증</h1>
+        <h1>💸SettleUp 정산 영수증</h1>
         <p className="sub">누가 누구에게 얼마를 보내면 되는지 계산해드려요.</p>
         <div className="group-name-wrap">
           <input
