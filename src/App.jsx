@@ -53,14 +53,38 @@ export default function App() {
   }
 
   const removePerson = (name) => {
+    // Warn if this person is tied to any activity (payer/participant/share).
+    const involved = state.activities.filter(
+      (a) =>
+        a.payer === name ||
+        a.participants.includes(name) ||
+        (a.shares && name in a.shares),
+    )
+    if (involved.length > 0) {
+      const ok = confirm(
+        `'${name}' 님은 ${involved.length}개 활동에 포함되어 있어요.\n` +
+          `삭제하면 해당 활동의 결제자·참여자에서도 제거됩니다. 계속할까요?`,
+      )
+      if (!ok) return
+    }
+
     setState((s) => ({
+      ...s, // keep groupName and other fields intact
       people: s.people.filter((p) => p !== name),
       // Drop the person from activities; clear payer if it was them.
-      activities: s.activities.map((a) => ({
-        ...a,
-        payer: a.payer === name ? '' : a.payer,
-        participants: a.participants.filter((p) => p !== name),
-      })),
+      activities: s.activities.map((a) => {
+        const next = {
+          ...a,
+          payer: a.payer === name ? '' : a.payer,
+          participants: a.participants.filter((p) => p !== name),
+        }
+        // 각자(custom): also drop their used-amount entry.
+        if (a.shares && name in a.shares) {
+          const { [name]: _drop, ...rest } = a.shares
+          next.shares = rest
+        }
+        return next
+      }),
     }))
   }
 
