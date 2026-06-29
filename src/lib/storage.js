@@ -2,6 +2,7 @@
 // but the URL stays clean (no state encoded in the link).
 
 const KEY = 'settleup:state'
+const ONBOARD_KEY = 'settleup:onboarded'
 const EMPTY = { groupName: '', people: [], activities: [] }
 
 function isValid(obj) {
@@ -49,5 +50,23 @@ export function saveState(state) {
     localStorage.setItem(KEY, JSON.stringify(state))
   } catch {
     /* storage full / unavailable — ignore */
+  }
+}
+
+// First-visit onboarding flag, kept under a separate key so that
+// resetting the data ('초기화') does not re-trigger the walkthrough.
+export function isOnboarded() {
+  try {
+    return localStorage.getItem(ONBOARD_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function markOnboarded() {
+  try {
+    localStorage.setItem(ONBOARD_KEY, '1')
+  } catch {
+    /* ignore */
   }
 }

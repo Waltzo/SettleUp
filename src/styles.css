@@ -399,3 +399,42 @@ footer { margin-top: 20px; text-align: center; color: var(--muted); font-size: 0
   background: #fff;
   text-align: left;
 }
+
+/* onboarding walkthrough modal */
+.onboard-progress {
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.onboard-body {
+  background: #fff;
+  text-align: center;
+  padding: 24px 20px;
+}
+.onboard-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.onboard-desc {
+  margin: 0 auto;
+  max-width: 320px;
+  color: var(--text, #222);
+  line-height: 1.6;
+}
+.onboard-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.onboard-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+}
+.onboard-dots .dot.on {
+  background: var(--brand);
+}

@@ -5,8 +5,9 @@ import ActivityList from './components/ActivityList.jsx'
 import SettlementResult from './components/SettlementResult.jsx'
 import ShareActions from './components/ShareActions.jsx'
 import AddToActivitiesModal from './components/AddToActivitiesModal.jsx'
+import OnboardingModal from './components/OnboardingModal.jsx'
 import { computeBalances, minimizeTransfers } from './lib/settle.js'
-import { loadState, saveState } from './lib/storage.js'
+import { loadState, saveState, isOnboarded, markOnboarded } from './lib/storage.js'
 
 let _id = 0
 const newId = () => `a${Date.now()}_${_id++}`
@@ -16,6 +17,12 @@ export default function App() {
   const [editingId, setEditingId] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
   const [pendingPerson, setPendingPerson] = useState(null)
+  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboarded())
+
+  const closeOnboarding = () => {
+    markOnboarded()
+    setShowOnboarding(false)
+  }
 
   // Persist to localStorage so a reload restores the draft.
   useEffect(() => {
@@ -186,6 +193,8 @@ export default function App() {
           onClose={() => setPendingPerson(null)}
         />
       )}
+
+      {showOnboarding && <OnboardingModal onClose={closeOnboarding} />}
 
       <ShareActions
         onReset={reset}
