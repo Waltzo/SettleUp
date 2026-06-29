@@ -26,7 +26,7 @@ export default function ShareActions({ onReset, receiptData }) {
         초기화
       </button>
 
-      {blob && <ReceiptModal blob={blob} onClose={() => setBlob(null)} />}
+      {blob && <ReceiptModal blob={blob} groupName={receiptData.groupName} onClose={() => setBlob(null)} />}
     </div>
   )
 }

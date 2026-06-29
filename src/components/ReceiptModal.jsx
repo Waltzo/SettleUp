@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { shareBlob, downloadBlob } from '../lib/receipt.js'
 
-export default function ReceiptModal({ blob, onClose }) {
+export default function ReceiptModal({ blob, groupName, onClose }) {
   const [url, setUrl] = useState('')
 
   // Can this browser share the image file directly (mobile / Web Share API)?
   const shareSupported = useMemo(() => {
     try {
-      const file = new File([blob], 'settleup-receipt.png', { type: 'image/png' })
+      const file = new File([blob], 'placeholder.png', { type: 'image/png' })
       return !!navigator.canShare && navigator.canShare({ files: [file] })
     } catch {
       return false
@@ -38,12 +38,12 @@ export default function ReceiptModal({ blob, onClose }) {
           {url && <img src={url} alt="정산 영수증 미리보기" className="receipt-img" />}
         </div>
         <div className="modal-actions">
-          <button className="brand-outline" onClick={() => downloadBlob(blob)}>
+          <button className="brand-outline" onClick={() => downloadBlob(blob, groupName)}>
             다운로드
           </button>
           <button
             className="primary"
-            onClick={() => shareBlob(blob)}
+            onClick={() => shareBlob(blob, groupName)}
             disabled={!shareSupported}
             title={shareSupported ? '' : '이 브라우저는 이미지 공유를 지원하지 않습니다'}
           >

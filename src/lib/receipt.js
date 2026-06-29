@@ -3,6 +3,16 @@ import QRCode from 'qrcode'
 
 const won = (n) => `${Number(n).toLocaleString('ko-KR')}원`
 
+function makeReceiptFilename(groupName) {
+  const safeGroupName = (groupName || '')
+    .trim()
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '-')
+    .replace(/\s+/g, ' ')
+    .replace(/[. ]+$/g, '')
+
+  return `settleup-${safeGroupName || 'receipt'}.png`
+}
+
 // QR size (px) drawn at the bottom of the receipt.
 const QR = 132
 
@@ -265,11 +275,11 @@ export async function renderReceipt({ groupName, people = [], activities = [], b
 }
 
 // Force a PNG download of the blob.
-export function downloadBlob(blob) {
+export function downloadBlob(blob, groupName) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'settleup-receipt.png'
+  a.download = makeReceiptFilename(groupName)
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
@@ -280,8 +290,8 @@ export function downloadBlob(blob) {
  * Share an already-rendered blob via Web Share API (with file) when
  * supported, else fall back to download. Returns 'shared' | 'cancelled' | 'downloaded'.
  */
-export async function shareBlob(blob) {
-  const file = new File([blob], 'settleup-receipt.png', { type: 'image/png' })
+export async function shareBlob(blob, groupName) {
+  const file = new File([blob], makeReceiptFilename(groupName), { type: 'image/png' })
 
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
@@ -292,6 +302,6 @@ export async function shareBlob(blob) {
     }
   }
 
-  downloadBlob(blob)
+  downloadBlob(blob, groupName)
   return 'downloaded'
 }
